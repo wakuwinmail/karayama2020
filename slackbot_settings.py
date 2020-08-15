@@ -5,4 +5,5 @@ DEFULT_REPLY = "not known word"
 PLUGINS = [
     'slackbot.plugins' ,
     'botmodule' ,
+    'botmodule2',
 ]
