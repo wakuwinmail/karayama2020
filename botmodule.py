@@ -6,8 +6,21 @@ import requests
 def test(message):
     message.reply('動作確認')
 
-@listen_to('IDを入力 (.*)')
-def test_id(message,something):
+
+contest = {}
+
+@respond_to('バチャ立てて')
+def InputContest(message):
+    message.reply('参加する人はIDを入力してください')
+    contestAPI = requests.get('http://codeforces.com/api/contest.list?gym=false')
+    contestAPI = contestAPI.json()
+    if contestAPI['status'] == 'FAILED' :
+        message.reply('APIの入手に失敗しました')
+        return
+    
+
+@respond_to('IDを入力 (.*)')
+def InputID(message,something):
     message.reply('テスト')
     submission = requests.get('http://codeforces.com/api/user.status?handle='+something+'&from=1')
     submission = submission.json()
@@ -16,6 +29,7 @@ def test_id(message,something):
         return
     submission = submission['result']
     message.reply(str(len(submission)))
+
 
 @listen_to('リコメンドテスト (.*)')
 def test_id(message,something):
