@@ -86,8 +86,6 @@ def test_id(message,something):
     with open('contest.json') as c:
         contest = json.load(c)
 
-    print("{}".format(len(contest)))
-
     for x in data_user:
         check = str(x['contestId'])
         if check in All_contest:
@@ -97,8 +95,6 @@ def test_id(message,something):
                 if check in contest:
                     del contest[check]
                     # id_lists.remove(check)
-
-    print("{}".format(len(contest)))
 
     with open('contest.json', 'w') as c:
         json.dump(contest, c, indent=4)
