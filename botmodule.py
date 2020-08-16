@@ -92,8 +92,8 @@ def test_id(message,something):
 def test_recommendation(message):
     cnt = 0
     try:
-        with open('All_contest.json') as ac:
-            All_contest = json.load(ac)
+        with open('contest.json') as c:
+            contest = json.load(c)
     except:
         message.reply('先にバチャを立ててください')
     for x in contest:
@@ -104,4 +104,4 @@ def test_recommendation(message):
             break
 
     os.remove('contest.json')
-    os.remove('ALL_contest.json')
+    os.remove('all_contest.json')
