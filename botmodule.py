@@ -91,8 +91,11 @@ def test_id(message,something):
 @respond_to('ID入力終了')
 def test_recommendation(message):
     cnt = 0
-    with open('contest.json') as c:
-        contest = json.load(c)
+    try:
+        with open('All_contest.json') as ac:
+            All_contest = json.load(ac)
+    except:
+        message.reply('先にバチャを立ててください')
     for x in contest:
         message.reply(x)
         message.reply('http://codeforces.com/contest/'+str(contest[x]))
