@@ -5,7 +5,7 @@ import requests
 import os
 
 @respond_to('バチャ立てて (.*)')
-def InputContest(message,something):
+def input_contest(message,something):
     contestAPI = requests.get('http://codeforces.com/api/contest.list?gym=false')
     contestAPI = contestAPI.json()
     if contestAPI['status'] == 'FAILED' :
@@ -13,7 +13,7 @@ def InputContest(message,something):
         return
     contestAPI = contestAPI['result']
 
-    All_contest = {}
+    all_contest = {}
     contest = {}
     Div1_contest = {}
     Div2_contest = {}
@@ -34,7 +34,7 @@ def InputContest(message,something):
                     Div2_contest[KeyName] = Id
                 if 'Div. 3' in Name:
                     Div3_contest[KeyName] = Id
-                All_contest[Id] = KeyName
+                all_contest[Id] = KeyName
     if something == 'Div1':
         contest = Div1_contest
     if something == 'Div2':
@@ -43,13 +43,23 @@ def InputContest(message,something):
         contest = Div2_contest        
     if something == 'Div3':
         contest = Div3_contest
-    with open('All_contest.json', 'w') as ac:
-        json.dump(All_contest, ac, indent=4)
+    with open('all_contest.json', 'w') as ac:
+        json.dump(all_contest, ac, indent=4)
     with open('contest.json', 'w') as c:
         json.dump(contest, c, indent=4)
 
     message.send('参加する人はIDをメンションで送ってください')
     message.send('入力方法\nID入力 [ID名]')
+
+@respond_to('バチャ消して')
+def delete_contest(message):
+    try:
+        os.remove('contest.json')
+        os.remove('all_contest.json')
+    except:
+        message.reply('バチャが立っていません')
+    else:
+        message.reply('バチャを中止しました')
 
 @respond_to('ID入力 (.*)')
 def test_id(message,something):
@@ -60,25 +70,23 @@ def test_id(message,something):
         return
     data_user = data_user['result']
     
-    All_contest = {}
+    all_contest = {}
     contest = {}
 
     try:
-        with open('All_contest.json') as ac:
-            All_contest = json.load(ac)
-    except:
-        message.reply('先にバチャを立ててください')
-
-    try:
+        with open('all_contest.json') as ac:
+            all_contest = json.load(ac)
         with open('contest.json') as c:
             contest = json.load(c)
     except:
         message.reply('先にバチャを立ててください')
+    else:
+        message.reply('IDを受け付けました')
 
     for x in data_user:
         check = str(x['contestId'])
-        if check in All_contest:
-            check = All_contest[check]
+        if check in all_contest:
+            check = all_contest[check]
             if check.startswith('Codeforces Round #'):
                 check = check[0:21]
                 if check in contest:
@@ -88,8 +96,7 @@ def test_id(message,something):
     with open('contest.json', 'w') as c:
         json.dump(contest, c, indent=4)
 
-    message.reply('IDを受け付けました')
-
+    
 @respond_to('ID入力終了')
 def test_recommendation(message):
     cnt = 0
