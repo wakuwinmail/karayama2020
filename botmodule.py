@@ -4,16 +4,6 @@ import json
 import requests
 import os
 
-@respond_to('test')
-def test(message):
-    message.reply('動作確認')
-
-@listen_to('テスト')
-def Test(message):
-    message.reply('動作確認')
-
-
-
 @respond_to('バチャ立てて')
 def InputContest(message):
     contestAPI = requests.get('http://codeforces.com/api/contest.list?gym=false')
@@ -47,7 +37,6 @@ def InputContest(message):
 
 @respond_to('IDを入力 (.*)')
 def InputID(message,something):
-    message.reply('テスト')
     submission = requests.get('http://codeforces.com/api/user.status?handle='+something+'&from=1')
     submission = submission.json()
     if submission['status'] == 'FAILED' :
@@ -59,8 +48,6 @@ def InputID(message,something):
 
 @listen_to('リコメンドテスト (.*)')
 def test_id(message,something):
-    message.reply('テスト')
-
     req_user = requests.get('http://codeforces.com/api/user.status?handle='+something+'&from=1')
     data_user = req_user.json()
     data_user = data_user['result']
@@ -81,10 +68,17 @@ def test_id(message,something):
     All_contest = {}
     contest = {}
 
-    with open('All_contest.json') as ac:
-        All_contest = json.load(ac)
-    with open('contest.json') as c:
-        contest = json.load(c)
+    try:
+        with open('All_contest.json') as ac:
+            All_contest = json.load(ac)
+    except:
+        message.reply('先にバチャを立ててください')
+
+    try:
+        with open('contest.json') as c:
+            contest = json.load(c)
+    except:
+        message.reply('先にバチャを立ててください')
 
     for x in data_user:
         check = str(x['contestId'])
@@ -99,9 +93,10 @@ def test_id(message,something):
     with open('contest.json', 'w') as c:
         json.dump(contest, c, indent=4)
 
+    message.reply('IDを受け付けました')
+
 @respond_to('ID入力終了')
 def test_recommendation(message):
-    message.reply('テスト')
     cnt = 0
     with open('contest.json') as c:
         contest = json.load(c)
@@ -113,3 +108,4 @@ def test_recommendation(message):
             break
 
     os.remove('contest.json')
+    os.remove('ALL_contest.json')
