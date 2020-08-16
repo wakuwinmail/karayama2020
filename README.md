@@ -1,3 +1,3 @@
 #使い方
-@bot test
+@bot test \n
 動作確認を出力
