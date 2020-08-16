@@ -1,6 +1,8 @@
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
+import json
 import requests
+import os
 
 @respond_to('test')
 def test(message):
@@ -10,8 +12,7 @@ def test(message):
 def Test(message):
     message.reply('動作確認')
 
-All_contest = {}
-contest = {}
+
 
 @respond_to('バチャ立てて')
 def InputContest(message):
@@ -21,6 +22,10 @@ def InputContest(message):
         message.reply('APIの入手に失敗しました')
         return
     contestAPI = contestAPI['result']
+
+    All_contest = {}
+    contest = {}
+
     for x in contestAPI:
         if x['phase'] != 'FINISHED' :
             continue
@@ -33,6 +38,11 @@ def InputContest(message):
                 Name = Name[0:21]
                 contest[Name] = Id
                 All_contest[Id] = Name
+    with open('All_contest.json', 'w') as ac:
+        json.dump(All_contest, ac, indent=4)
+    with open('contest.json', 'w') as c:
+        json.dump(contest, c, indent=4)
+
     message.reply('参加する人はIDを入力してください')
 
 @respond_to('IDを入力 (.*)')
@@ -68,8 +78,18 @@ def test_id(message,something):
     #         contest_names[contest['id']] = contest['name']
     #         id_lists.append(contest['id'])
     
+    All_contest = {}
+    contest = {}
+
+    with open('All_contest.json') as ac:
+        All_contest = json.load(ac)
+    with open('contest.json') as c:
+        contest = json.load(c)
+
+    print("{}".format(len(contest)))
+
     for x in data_user:
-        check = x['contestId']
+        check = str(x['contestId'])
         if check in All_contest:
             check = All_contest[check]
             if check.startswith('Codeforces Round #'):
@@ -78,13 +98,22 @@ def test_id(message,something):
                     del contest[check]
                     # id_lists.remove(check)
 
+    print("{}".format(len(contest)))
+
+    with open('contest.json', 'w') as c:
+        json.dump(contest, c, indent=4)
+
 @respond_to('ID入力終了')
 def test_recommendation(message):
     message.reply('テスト')
     cnt = 0
+    with open('contest.json') as c:
+        contest = json.load(c)
     for x in contest:
         message.reply(x)
         message.reply('http://codeforces.com/contest/'+str(contest[x]))
         cnt += 1
         if cnt == 3:
             break
+
+    os.remove('contest.json')
