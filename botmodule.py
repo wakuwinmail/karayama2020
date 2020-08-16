@@ -4,8 +4,8 @@ import json
 import requests
 import os
 
-@respond_to('バチャ立てて')
-def InputContest(message):
+@respond_to('バチャ立てて (.*)')
+def InputContest(message,something):
     contestAPI = requests.get('http://codeforces.com/api/contest.list?gym=false')
     contestAPI = contestAPI.json()
     if contestAPI['status'] == 'FAILED' :
@@ -15,19 +15,34 @@ def InputContest(message):
 
     All_contest = {}
     contest = {}
-
+    Div1_contest = {}
+    Div2_contest = {}
+    Div3_contest = {}
     for x in contestAPI:
         if x['phase'] != 'FINISHED' :
             continue
-        Name = x['name']
         Id = x['id']
+        Name = x['name']
         if Name.startswith('Codeforces Round #'):
             # #PI、#FFを弾く
             if Name[18].isdigit():
-                # Name = 'Codeforces Round #XXX'
-                Name = Name[0:21]
-                contest[Name] = Id
-                All_contest[Id] = Name
+                # KeyName = 'Codeforces Round #XXX'
+                KeyName = Name[0:21]
+                if 'Div. 1' in Name:
+                    Div1_contest[KeyName] = Id
+                if 'Div. 2' in Name:
+                    Div2_contest[KeyName] = Id
+                if 'Div. 3' in Name:
+                    Div3_contest[KeyName] = Id
+                All_contest[Id] = KeyName
+    if something == 'Div1':
+        contest = Div1_contest
+    if something == 'Div2':
+        for x in Div1_contest:
+            del Div2_contest[x]
+        contest = Div2_contest        
+    if something == 'Div3':
+        contest = Div3_contest
     with open('All_contest.json', 'w') as ac:
         json.dump(All_contest, ac, indent=4)
     with open('contest.json', 'w') as c:
@@ -44,19 +59,6 @@ def test_id(message,something):
         message.reply('そのIDは存在しません')
         return
     data_user = data_user['result']
-    # len_user = len(data_user['result'])
-
-    # req_contests = requests.get('https://codeforces.com/api/contest.list?gym=false')
-    # data_contests = req_contests.json()
-    # len_contests = len(data_contests['result'])
-    # contest_names = {}
-    # id_lists = []
-
-    # for i in range(len_contests): 
-    #     contest = data_contests['result'][i]
-    #     if contest['phase'] == 'FINISHED':
-    #         contest_names[contest['id']] = contest['name']
-    #         id_lists.append(contest['id'])
     
     All_contest = {}
     contest = {}
@@ -96,9 +98,12 @@ def test_recommendation(message):
             contest = json.load(c)
     except:
         message.reply('先にバチャを立ててください')
+    
+    if len(contest) == 0:
+        message.send('該当するコンテストはありません')
     for x in contest:
-        message.reply(x)
-        message.reply('http://codeforces.com/contest/'+str(contest[x]))
+        message.send(x)
+        message.send('http://codeforces.com/contest/'+str(contest[x]))
         cnt += 1
         if cnt == 3:
             break
