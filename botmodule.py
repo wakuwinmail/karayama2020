@@ -33,23 +33,16 @@ def InputContest(message):
     with open('contest.json', 'w') as c:
         json.dump(contest, c, indent=4)
 
-    message.reply('参加する人はIDを入力してください')
+    message.send('参加する人はIDをメンションで送ってください')
+    message.send('入力方法\nID入力 [ID名]')
 
-@respond_to('IDを入力 (.*)')
-def InputID(message,something):
-    submission = requests.get('http://codeforces.com/api/user.status?handle='+something+'&from=1')
-    submission = submission.json()
-    if submission['status'] == 'FAILED' :
-        message.reply('そのIDは存在しません')
-        return
-    submission = submission['result']
-    message.reply(str(len(submission)))
-
-
-@listen_to('リコメンドテスト (.*)')
+@respond_to('ID入力 (.*)')
 def test_id(message,something):
     req_user = requests.get('http://codeforces.com/api/user.status?handle='+something+'&from=1')
     data_user = req_user.json()
+    if data_user['status'] == 'FAILED' :
+        message.reply('そのIDは存在しません')
+        return
     data_user = data_user['result']
     # len_user = len(data_user['result'])
 
