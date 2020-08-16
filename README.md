@@ -7,15 +7,23 @@
 - Codeforcesのバーチャルコンテストリコメンド(解いていない問題セットの提示)
 - バーチャルコンテスト後の問題議論用スレッド立て
 
+## 必要なもの
+
+-Python3系の環境（最新のものをおすすめします）
+
 ## 導入方法
 
-1.karayama2020フォルダを手元にダウンロードします。
+1.pipを使ってslackbotライブラリをインストールします。
 
-2.https://miyabikno-jobs.com/slackbot-api-token/ を参考にし、APIトークンを取得してください。
+2.karayama2020レポジトリを手元にクローンします。
 
-3.取得したAPIトークンを"apitoken.txt"としてテキストファイルに保存し、1のフォルダ直下に置きます。
+3.https://miyabikno-jobs.com/slackbot-api-token/ を参考にし、APIトークンを取得します。
 
-4.手元でbot.pyを実行すると、Slack botが起動します。
+4.Botを導入したいSlackのチャンネルで「アプリを追加する」を選択し、3で作成したBotをチャンネルに追加します。
+
+5.取得したAPIトークンを"apitoken.txt"としてテキストファイルに保存し、1のフォルダ直下に置きます。
+
+6.手元でbot.pyを実行すると、Slack botが起動します。
 
 
 ## Codeforcesのバーチャルコンテストリコメンド
