@@ -4,7 +4,7 @@ import json
 import requests
 import os
 
-@respond_to('バチャ立てて (.*)')
+@respond_to('build (.*)')
 def input_contest(message,something):
     contestAPI = requests.get('http://codeforces.com/api/contest.list?gym=false')
     contestAPI = contestAPI.json()
@@ -37,21 +37,25 @@ def input_contest(message,something):
                 all_contest[Id] = KeyName
     if something == 'Div1':
         contest = Div1_contest
-    if something == 'Div2':
+    elif something == 'Div2':
         for x in Div1_contest:
             del Div2_contest[x]
         contest = Div2_contest        
-    if something == 'Div3':
+    elif something == 'Div3':
         contest = Div3_contest
+    else :
+        message.reply('入力されたDivには対応していません')
+        message.reply('対応例: Div1 Div2 Div3')
+        return
     with open('all_contest.json', 'w') as ac:
         json.dump(all_contest, ac, indent=4)
     with open('contest.json', 'w') as c:
         json.dump(contest, c, indent=4)
 
     message.send('参加する人はIDをメンションで送ってください')
-    message.send('入力方法\nID入力 [ID名]')
+    message.send('入力方法\nid [ID名]')
 
-@respond_to('バチャ消して')
+@respond_to('erase')
 def delete_contest(message):
     try:
         os.remove('contest.json')
@@ -61,7 +65,7 @@ def delete_contest(message):
     else:
         message.reply('バチャを中止しました')
 
-@respond_to('ID入力 (.*)')
+@respond_to('id (.*)')
 def test_id(message,something):
     req_user = requests.get('http://codeforces.com/api/user.status?handle='+something+'&from=1')
     data_user = req_user.json()
@@ -97,7 +101,7 @@ def test_id(message,something):
         json.dump(contest, c, indent=4)
 
     
-@respond_to('ID入力終了')
+@respond_to('run')
 def test_recommendation(message):
     cnt = 0
     try:
@@ -105,7 +109,7 @@ def test_recommendation(message):
             contest = json.load(c)
     except:
         message.reply('先にバチャを立ててください')
-    
+        return
     if len(contest) == 0:
         message.send('該当するコンテストはありません')
     for x in contest:
