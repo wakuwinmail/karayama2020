@@ -114,7 +114,7 @@ def test_recommendation(message):
         message.send('該当するコンテストはありません')
     for x in contest:
         message.send(x)
-        message.send('http://codeforces.com/contest/'+str(contest[x])+'my')
+        message.send('http://codeforces.com/contest/'+str(contest[x])+'/my')
         cnt += 1
         if cnt == 1:
             break
